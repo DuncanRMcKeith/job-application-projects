@@ -8,11 +8,11 @@ Dependencies:
     pip install rich click
 
 Usage:
-    python network_monitor.py                          # defaults
-    python network_monitor.py -t 8.8.8.8 -t 1.1.1.1  # custom targets
-    python network_monitor.py --interval 5 --db metrics.db
-    python network_monitor.py --no-dashboard           # headless / log-only
-    python network_monitor.py report                   # print DB summary
+    python python.network_monitor.py                          # defaults
+    python python.network_monitor.py -t 8.8.8.8 -t 1.1.1.1  # custom targets
+    python python.network_monitor.py --interval 5 --db metrics.db
+    python python.network_monitor.py --no-dashboard           # headless / log-only
+    python python.network_monitor.py report                   # print DB summary
 """
 
 from __future__ import annotations
