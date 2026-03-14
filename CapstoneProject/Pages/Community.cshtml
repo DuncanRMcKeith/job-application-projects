@@ -1,0 +1,146 @@
+﻿@page
+@model CapstoneProject.Pages.CommunityModel
+@{
+    ViewData["Title"] = "Communities";
+}
+<style>
+    .card-banner {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+    }
+
+    .card-banner-placeholder {
+        width: 100%;
+        height: 160px;
+        background-color: #2a2a2a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #555;
+        font-size: 2rem;
+    }
+
+    .community-card {
+        height: 100%;
+        background-color: #1A1A1A;
+        border-color: #333;
+    }
+
+        .community-card .card-body {
+            background-color: #1A1A1A;
+        }
+
+        .community-card .card-footer {
+            background-color: #1A1A1A;
+            border-top-color: #333;
+        }
+
+        .community-card .card-title {
+            color: #f0f0f0;
+        }
+
+        .community-card .card-text {
+            color: #aaa !important;
+        }
+
+        .community-card small {
+            color: #777 !important;
+        }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Communities</h1>
+    <a asp-page="/CreateCommunity" class="btn btn-primary">+ Add Community</a>
+</div>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+
+    @if (Model.Communities != null && Model.Communities.Any())
+    {
+        @foreach (var community in Model.Communities)
+        {
+            <div class="col">
+                <div class="card community-card">
+
+                    @if (!string.IsNullOrEmpty(community.ImageURL))
+                    {
+                        <img class="card-banner" src="@community.ImageURL" alt="@community.Name" />
+                    }
+                    else
+                    {
+                        <div class="card-banner-placeholder">⚔</div>
+                    }
+
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title mb-0">@community.Name</h5>
+                            @if (!string.IsNullOrEmpty(community.CampaignVersion))
+                            {
+                                <span class="badge bg-secondary ms-2">@community.CampaignVersion</span>
+                            }
+                        </div>
+                        <p class="card-text text-muted">@community.Description</p>
+                    </div>
+
+                    <div class="card-footer d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div>
+                            @if (!string.IsNullOrEmpty(community.Badges))
+                            {
+                                @foreach (var badge in community.Badges.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                                {
+                                    <span class="badge bg-primary me-1">@badge.Trim()</span>
+                                }
+                            }
+                            <small class="text-muted d-block mt-1">@community.MemberCount members</small>
+
+                            <!-- Add this below it -->
+                            <button class="btn btn-sm btn-outline-secondary mt-1" type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#members-@community.CommunityID">
+                                View Members
+                            </button>
+
+                            <div class="collapse mt-2" id="members-@community.CommunityID">
+                                @if (Model.CommunityMembers.ContainsKey(community.CommunityID))
+                                {
+                                    @foreach (var member in Model.CommunityMembers[community.CommunityID])
+                                    {
+                                        <div class="d-flex justify-content-between">
+                                            <small class="text-light">@member.Username</small>
+                                            <small class="text-muted">@member.Role</small>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+
+                        @if (Model.JoinedCommunityIds.Contains(community.CommunityID))
+                        {
+                            <form method="post">
+                                <input type="hidden" name="communityId" value="@community.CommunityID" />
+                                <button type="submit" asp-page-handler="Leave" class="btn btn-sm btn-outline-danger">Leave</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form method="post">
+                                <input type="hidden" name="communityId" value="@community.CommunityID" />
+                                <button type="submit" asp-page-handler="Join" class="btn btn-sm btn-outline-primary">Join</button>
+                            </form>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <!-- IF IT PULLS ABSOLUTELY NOTHING -->
+        <div class="col">
+            <p class="text-muted fst-italic">No communities found.</p>
+        </div>
+    }
+
+</div>

@@ -1,0 +1,293 @@
+﻿html {
+    font-size: 14px;
+    background-color: #1c1c1c;
+    color: #DAA520;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+a {
+    color: #DAA520;
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem #F0F0F0, 0 0 0 0.25rem #DAA520;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    background-color: #1c1c1c;
+    color: #DAA520;
+}
+
+.custom-navbar .nav-link:visited {
+    color: #DAA520 !important;
+}
+
+.custom-navbar .nav-link:hover {
+    color: #F0F0F0 !important;
+}
+
+.custom-navbar .nav-link.active {
+    color: #F0F0F0 !important;
+}
+
+.custom-navbar .nav-link,
+.custom-navbar .nav-link:visited {
+    color: #DAA520 !important;
+}
+
+    .custom-navbar .nav-link:hover {
+        color: #F0F0F0 !important;
+    }
+
+.custom-navbar .navbar-brand:hover {
+    color: #F0F0F0 !important;
+}
+
+.custom-navbar .nav-link.active {
+    color: #F0F0F0 !important;
+}
+
+.OwnerImages {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+    .OwnerImages img {
+        width: 150px;
+        height: auto;
+        object-fit: cover;
+    }
+
+.mission-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 1200px;
+    text-align: center;
+}
+
+@font-face {
+    font-family: "DragonHunter";
+    src: url("/fonts/DragonHunter-9Ynxj.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+body, html {
+    font-family: "DragonHunter", sans-serif;
+}
+
+html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-image: url('/Images/DungeonBackground.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    color: #DAA520;
+}
+
+.custom-navbar {
+    background-color: #1a1a1a !important;
+}
+
+footer,
+.footer {
+    margin: 0;
+    background-color: #1a1a1a !important;
+    padding: 0.5rem 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+}
+
+/* Chat Room CSS Starts Here */
+#chat-widget {
+    position: fixed;
+    bottom: 50px;
+    right: 20px;
+    width: 300px;
+    font-family: "DragonHunter", sans-serif;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    z-index: 300;
+    background: #1c1c1c;
+    border-radius: 8px;
+    border: 1px solid #DAA520;
+}
+
+.chat-btn {
+    width: auto !important;
+    margin: 0 !important;
+    line-height: normal !important;
+}
+
+#chat-body {
+    display: flex;
+    flex-direction: column;
+    height: 350px;
+    background-color: #1c1c1c;
+    border-radius: 0 0 8px 8px;
+}
+
+#chatHome {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+    #chatHome button {
+        background-color: #DAA520;
+        color: #1c1c1c;
+        border: none;
+        padding: 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: "DragonHunter", sans-serif;
+        font-weight: bold;
+        width: 100%;
+    }
+
+        #chatHome button:hover {
+            background-color: #F0F0F0;
+        }
+
+#friendsDM {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 8px;
+}
+
+    #friendsDM button {
+        background-color: #DAA520;
+        color: #1c1c1c;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: "DragonHunter", sans-serif;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+        #friendsDM button:hover {
+            background-color: #F0F0F0;
+        }
+
+#friendsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow-y: auto;
+}
+
+    #friendsContainer button {
+        background-color: #2a2a2a;
+        color: #DAA520;
+        border: 1px solid #DAA520;
+        padding: 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: "DragonHunter", sans-serif;
+        text-align: left;
+        width: 100%;
+    }
+
+        #friendsContainer button:hover {
+            background-color: #DAA520;
+            color: #1c1c1c;
+        }
+
+#conversationView {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+    #conversationView > button {
+        background-color: #DAA520;
+        color: #1c1c1c;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-family: "DragonHunter", sans-serif;
+        font-weight: bold;
+        margin: 8px;
+        width: auto;
+    }
+
+        #conversationView > button:hover {
+            background-color: #F0F0F0;
+        }
+
+#chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    background: #2a2a2a;
+    color: #DAA520;
+    font-family: "DragonHunter", sans-serif;
+}
+
+#conversationView #inputBox {
+    display: flex;
+    border-top: 1px solid #DAA520;
+}
+
+#conversationView input {
+    flex: 1;
+    min-width: 0;
+    padding: 8px;
+    border: none;
+    background: #1c1c1c;
+    color: #DAA520;
+    font-family: "DragonHunter", sans-serif;
+}
+
+#conversationView #inputBox button {
+    border: none;
+    padding: 8px 12px;
+    background: #DAA520;
+    color: #1c1c1c;
+    cursor: pointer;
+    font-family: "DragonHunter", sans-serif;
+    font-weight: bold;
+}
+
+    #conversationView #inputBox button:hover {
+        background: #F0F0F0;
+    }

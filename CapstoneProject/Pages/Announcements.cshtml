@@ -1,0 +1,145 @@
+﻿@page
+@model CapstoneProject.Pages.AnnouncementsModel
+@{
+}
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+    }
+
+    body {
+        box-sizing: border-box;
+        padding: 18px;
+    }
+
+    .page {
+        min-height: 100vh;
+        border: 2px solid;
+        padding: 18px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .header {
+        border: 1px solid;
+        text-align: center;
+        padding: 10px 0;
+        font-size: 20px;
+        margin-bottom: 18px;
+    }
+
+    .main {
+        border: 1px solid;
+        padding: 26px;
+        box-sizing: border-box;
+    }
+
+    .topPosts {
+        width: 80%;
+        height: 300px;
+        margin: 0 auto 80px;
+        border: 1px solid;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        box-sizing: border-box;
+    }
+
+    .newContent {
+        width: 80%;
+        margin: 0 auto;
+        border: 1px solid;
+        box-sizing: border-box;
+        height: auto;
+        padding: 18px;
+        display: block;
+        font-size: 16px;
+    }
+
+    .update-box {
+        width: 80%;
+        margin: 0 auto 20px;
+        padding: 16px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        background-color: #1c1c1c;
+        border-radius: 10px;
+        border: 5px solid #DAA520;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.9);
+    }
+
+    .update-list {
+        width: fit-content;
+        margin: 0 auto;
+        text-align: left;
+    }
+
+    .badge {
+        background-color: #1c1c1c;
+        color: #DAA520;
+        border: 2px solid white;
+        font-weight: 600;
+        padding: 4px 8px;
+        border-radius: 6px;
+    }
+
+</style>
+
+<div class="header">Announcements</div>
+<br />
+<div class="main">
+    <!-- Display top 10 posts -->
+    @foreach (var post in Model.Posts)
+    {
+        <!-- Display username who made the post -->
+        <div class="update-box">
+            <div class="update-title">
+                <h2>
+                    @{
+                        string username = "Unknown";
+                        foreach (var user in Model.User_ID)
+                        {
+                            if (user.User_ID == post.Creator_ID)
+                            {
+                                username = user.Username;
+                            }
+                        }
+                    }
+                    @username
+                </h2>
+            </div>
+            <br />
+            <!-- Display post and time created -->
+            <div class="update-text">
+                @post.Content
+            </div>
+            <br />
+            <span class="update-date">
+                @post.Created_At.ToString("MMM dd, yyyy")
+            </span>
+        </div>
+    }
+</div>
+<br />
+<br />
+    <div class="newContent">
+        <!-- Latest update -->
+        <div class="update-box">
+            <div class="update-title">
+                <h2>Hotfix — v 0.4 <span class="badge">NEW</span></h2>
+                <span class="update-date">Feb 23, 2026</span>
+            </div>
+            <!-- List of current fixes -->
+            <ul class="update-list">
+                <li>Fixed Character Limit</li>
+                <li>Resolved Navigation Issues</li>
+                <li>Fixed Top 10 Posts Display</li>
+                <li>Allowed To Delete Character From Profile Page</li>
+            </ul>
+        </div>
+    </div>

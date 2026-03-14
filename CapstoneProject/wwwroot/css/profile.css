@@ -1,0 +1,166 @@
+﻿.profile-wrapper {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    display: block;
+}
+
+.profile-top {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 100%; /* full width of container */
+    margin: 0 auto; /* center the whole block on the page */
+    padding: 0 20px; /* optional: spacing on small screens */
+}
+
+
+.profile-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* centers username + bio horizontally */
+    margin-left: 20px;
+}
+
+    .profile-text p {
+        color: #F5E8D8;        
+    }
+
+    .profile-text p:nth-child(2) {
+        color: #DAA520;
+    }
+
+.profile-pic {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid;
+}
+.edit-profile {
+    grid-column: 1 / 2;
+    justify-self: center;
+    margin: 15px;
+    border-radius: 15px;
+    background-color: #F0F0F0;
+    color: #1a1a1a;
+    transition: 250ms ease;
+}
+
+.edit-profile:hover {
+    background-color: #DAA520;
+    box-shadow: 1px 1px white;
+    transform: translate(-1px, -1px);
+}
+
+
+.profile-characters nav ul {
+    border: 1px solid;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 5px;
+    list-style: none;
+    margin-bottom: 0px
+    
+}
+
+
+.profile-characters nav ul li {
+    width: 100px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transition: 250ms ease;
+}
+
+.profile-characters nav ul li a {
+    background-color: #daa520;
+    color: #585858;
+    border-radius: 15px;
+}
+
+.profile-characters nav ul li a:hover {
+    color: #DAA520;
+    background-color: #585858;
+}
+
+.comms-badges {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.comms, .badges {
+    border: 1px solid #DAA520;
+    width: 800px;
+    height: 400px;
+    margin: 20px auto;
+}
+
+.character-display {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #585858;
+    border-radius: 0px 0px 15px 15px;
+    padding: 10px 20px;
+    width: 100%;
+    margin: 0 auto;
+    padding-right: 35px;
+}
+
+
+
+.char-image img {
+    height: auto;
+    width: auto;
+    border-radius: 15px;
+}
+
+.character-display ul {
+    margin-left: 65px;
+    list-style: none;
+    overflow: hidden;
+}
+/* Full-page background */
+html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-image: url('/Images/DungeonBackground.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed; /* optional */
+}
+
+/* Flex layout to push footer to bottom */
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    background: transparent !important;
+}
+
+/* Main content should expand to fill space */
+main {
+    flex: 1 0 auto;
+}
+
+/* Navbar: solid dark */
+.custom-navbar {
+    background-color: #1a1a1a !important;
+}
+
+/* Footer: at bottom, solid dark, no extra gap */
+footer,
+.footer {
+    flex-shrink: 0;
+    margin: 0;
+    background-color: #1a1a1a !important;
+    padding: 0.5rem 0; /* adjust if you want tighter/looser */
+}
