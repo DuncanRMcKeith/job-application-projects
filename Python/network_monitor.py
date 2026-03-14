@@ -8,11 +8,14 @@ Dependencies:
     pip install rich click
 
 Usage:
-    python python.network_monitor.py                          # defaults
-    python python.network_monitor.py -t 8.8.8.8 -t 1.1.1.1  # custom targets
-    python python.network_monitor.py --interval 5 --db metrics.db
-    python python.network_monitor.py --no-dashboard           # headless / log-only
-    python python.network_monitor.py report                   # print DB summary
+    python job-application-projects/python/network_monitor.py
+    python job-application-projects/python/network_monitor.py -t 8.8.8.8 -t 1.1.1.1
+    python job-application-projects/python/network_monitor.py --interval 5
+    python job-application-projects/python/network_monitor.py --no-dashboard
+    python job-application-projects/python/network_monitor.py report
+
+Output files (metrics.db, network_monitor.log) are written to the same
+directory as this script: job-application-projects/python/
 """
 
 from __future__ import annotations
@@ -24,10 +27,8 @@ import re
 import sqlite3
 import statistics
 import sys
-from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import AsyncIterator
 
 import click
 from rich import box
@@ -38,18 +39,20 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
+# ── Save locations ─────────────────────────────────────────────────────────────
+# Anchored to this file's directory so logs and DB always land in
+# job-application-projects/python/ regardless of where you invoke Python from.
+_HERE = Path(__file__).parent
+DEFAULT_DB       = str(_HERE / "metrics.db")
+DEFAULT_LOG_FILE = str(_HERE / "network_monitor.log")
+
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Ping
 # ──────────────────────────────────────────────────────────────────────────────
 
 async def async_ping(host: str, count: int = 3) -> dict:
-    """
-    Non-blocking ping via asyncio.create_subprocess_exec.
-
-    Returns:
-        host, reachable, avg_ms, packet_loss_pct
-    """
+    """Non-blocking ping via asyncio.create_subprocess_exec."""
     is_windows = platform.system().lower() == "windows"
     cmd = (
         ["ping", "-n", str(count), host]
@@ -69,10 +72,12 @@ async def async_ping(host: str, count: int = 3) -> dict:
         output = stdout.decode() + stderr.decode()
         reachable = proc.returncode == 0
 
-        avg_ms = _parse_latency(output, is_windows)
-        loss = _parse_packet_loss(output)
-
-        return {"host": host, "reachable": reachable, "avg_ms": avg_ms, "packet_loss_pct": loss}
+        return {
+            "host": host,
+            "reachable": reachable,
+            "avg_ms": _parse_latency(output, is_windows),
+            "packet_loss_pct": _parse_packet_loss(output),
+        }
 
     except (asyncio.TimeoutError, FileNotFoundError):
         return {"host": host, "reachable": False, "avg_ms": None, "packet_loss_pct": 100.0}
@@ -125,18 +130,17 @@ class MetricsDB:
         self._conn.commit()
 
     def summary(self, host: str | None = None) -> list[dict]:
-        """Aggregate uptime % and latency stats, optionally filtered by host."""
         where = "WHERE host = ?" if host else ""
         params = (host,) if host else ()
         rows = self._conn.execute(
             f"""
             SELECT host,
-                   COUNT(*)                                         AS total,
-                   SUM(reachable)                                   AS up_count,
+                   COUNT(*)                                          AS total,
+                   SUM(reachable)                                    AS up_count,
                    ROUND(AVG(CASE WHEN reachable THEN avg_ms END),1) AS avg_ms,
                    ROUND(MIN(CASE WHEN reachable THEN avg_ms END),1) AS min_ms,
                    ROUND(MAX(CASE WHEN reachable THEN avg_ms END),1) AS max_ms,
-                   ROUND(AVG(packet_loss),1)                        AS avg_loss
+                   ROUND(AVG(packet_loss),1)                         AS avg_loss
             FROM checks {where}
             GROUP BY host
             ORDER BY host
@@ -170,7 +174,6 @@ class UptimeTracker:
         }
 
     def record(self, r: dict, now: datetime) -> str | None:
-        """Update state; return alert message if status changed, else None."""
         host, reachable = r["host"], r["reachable"]
         d = self._data[host]
         d["total"] += 1
@@ -215,15 +218,10 @@ class Dashboard:
 
     def tick(self, results: list[dict], alerts: list[str]) -> None:
         self._check += 1
-        self._alerts = (alerts + self._alerts)[:12]  # keep last 12
+        self._alerts = (alerts + self._alerts)[:12]
 
     def _status_table(self) -> Table:
-        t = Table(
-            box=box.SIMPLE_HEAVY,
-            expand=True,
-            show_header=True,
-            header_style="bold cyan",
-        )
+        t = Table(box=box.SIMPLE_HEAVY, expand=True, show_header=True, header_style="bold cyan")
         t.add_column("Host", style="bold")
         t.add_column("Status", justify="center")
         t.add_column("Uptime %", justify="right")
@@ -232,10 +230,8 @@ class Dashboard:
         for host in self._hosts:
             up = self._tracker._data[host]["last_status"]
             status = Text("● UP", style="bold green") if up else Text("● DOWN", style="bold red")
-            uptime = f"{self._tracker.uptime_pct(host)}%"
             lat = self._tracker.avg_latency(host)
-            latency = f"{lat} ms" if lat else "—"
-            t.add_row(host, status, uptime, latency)
+            t.add_row(host, status, f"{self._tracker.uptime_pct(host)}%", f"{lat} ms" if lat else "—")
 
         return t
 
@@ -248,8 +244,7 @@ class Dashboard:
         header = Panel(
             f"[bold]Network Monitor[/bold]  |  Check #{self._check}  |  {overall}  "
             f"|  [dim]{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}[/dim]",
-            box=box.HORIZONTALS,
-            border_style="dim",
+            box=box.HORIZONTALS, border_style="dim",
         )
         layout = Layout()
         layout.split_column(
@@ -274,8 +269,7 @@ async def monitor_loop(
     logger: logging.Logger,
 ) -> None:
     async def run_checks() -> tuple[list[dict], list[str]]:
-        now = datetime.utcnow()
-        ts = now.isoformat()
+        ts = datetime.utcnow().isoformat()
         results = await asyncio.gather(*[async_ping(h, ping_count) for h in targets])
         alerts: list[str] = []
         for r in results:
@@ -283,7 +277,7 @@ async def monitor_loop(
             db.insert(ts, r["host"], r["reachable"], r["avg_ms"], r["packet_loss_pct"])
             if alert:
                 alerts.append(alert)
-                logger.warning(re.sub(r"\[.*?\]", "", alert))  # strip Rich markup for log
+                logger.warning(re.sub(r"\[.*?\]", "", alert))
             logger.debug(
                 f"{r['host']}  {'UP  ' if r['reachable'] else 'DOWN'}  "
                 f"latency={r['avg_ms']}ms  loss={r['packet_loss_pct']}%"
@@ -314,8 +308,8 @@ async def monitor_loop(
               show_default=True, help="Host(s) to monitor. Repeat flag for multiple.")
 @click.option("--interval", default=10, show_default=True, help="Seconds between checks.")
 @click.option("--ping-count", default=3, show_default=True, help="Pings per host per check.")
-@click.option("--db", "db_path", default="metrics.db", show_default=True, help="SQLite database path.")
-@click.option("--log-file", default="network_monitor.log", show_default=True)
+@click.option("--db", "db_path", default=DEFAULT_DB, show_default=True, help="SQLite database path.")
+@click.option("--log-file", default=DEFAULT_LOG_FILE, show_default=True)
 @click.option("--log-level", default="INFO",
               type=click.Choice(["DEBUG", "INFO", "WARNING"], case_sensitive=False))
 @click.option("--no-dashboard", is_flag=True, help="Disable live dashboard (headless mode).")
@@ -327,7 +321,6 @@ def cli(ctx, targets, interval, ping_count, db_path, log_file, log_level, no_das
         ctx.obj["db_path"] = db_path
         return
 
-    # Logging
     logging.basicConfig(
         level=getattr(logging, log_level.upper()),
         format="%(asctime)s  [%(levelname)-8s]  %(message)s",
@@ -338,7 +331,6 @@ def cli(ctx, targets, interval, ping_count, db_path, log_file, log_level, no_das
         ],
     )
     logger = logging.getLogger("NetMon")
-
     db = MetricsDB(db_path)
     tracker = UptimeTracker(list(targets))
     dash = None if no_dashboard else Dashboard(list(targets), tracker)
@@ -346,9 +338,7 @@ def cli(ctx, targets, interval, ping_count, db_path, log_file, log_level, no_das
     logger.info(f"Starting monitor | targets={list(targets)} | interval={interval}s | db={db_path}")
 
     try:
-        asyncio.run(
-            monitor_loop(list(targets), interval, ping_count, db, tracker, dash, logger)
-        )
+        asyncio.run(monitor_loop(list(targets), interval, ping_count, db, tracker, dash, logger))
     except KeyboardInterrupt:
         logger.info("Monitor stopped.")
     finally:
@@ -356,7 +346,7 @@ def cli(ctx, targets, interval, ping_count, db_path, log_file, log_level, no_das
 
 
 @cli.command()
-@click.option("--db", "db_path", default="metrics.db", show_default=True)
+@click.option("--db", "db_path", default=DEFAULT_DB, show_default=True)
 @click.option("--host", default=None, help="Filter report to a single host.")
 def report(db_path, host):
     """Print an uptime/latency summary from the SQLite database."""
@@ -380,13 +370,9 @@ def report(db_path, host):
     for r in rows:
         uptime = round(r["up_count"] / r["total"] * 100, 1) if r["total"] else 0.0
         t.add_row(
-            r["host"],
-            str(r["total"]),
-            f"{uptime}%",
-            str(r["avg_ms"] or "—"),
-            str(r["min_ms"] or "—"),
-            str(r["max_ms"] or "—"),
-            f"{r['avg_loss']}%",
+            r["host"], str(r["total"]), f"{uptime}%",
+            str(r["avg_ms"] or "—"), str(r["min_ms"] or "—"),
+            str(r["max_ms"] or "—"), f"{r['avg_loss']}%",
         )
 
     console.print(t)
