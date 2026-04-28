@@ -4,96 +4,22 @@
   <meta charset="UTF-8" />
   <title>Bug Quest Tracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="app-header">
-    <h1>Bug Quest Tracker</h1>
-    <p>Follow each bug’s journey through time and story.</p>
-  </header>
+  <!---First page is going to be our login block, this will need a users class that we store somewhere(idk for now not worrying about it, probally will need to do an sql server and use password enscyption) -->
+  <h1>Welcome to the Bug Dungeon: Here to help you track your coding</h1>
+  <div id="Login">
+  <form id="loginForm">
+    <p>Username:</p> <input type="text" id="username">
+    <p>Password:</p> <input type="password" id="password">
 
-  <main class="app-main">
-    <!-- Left: Bug list + create form -->
-    <section class="panel panel-left">
-      <h2>Bugs</h2>
-
-      <form id="new-bug-form" class="bug-form">
-        <h3>Create New Bug</h3>
-        <label>
-          Title
-          <input type="text" id="bug-title" required />
-        </label>
-        <label>
-          Description
-          <textarea id="bug-description" rows="3" required></textarea>
-        </label>
-        <label>
-          Severity
-          <select id="bug-severity">
-            <option value="Low">Low</option>
-            <option value="Medium" selected>Medium</option>
-            <option value="High">High</option>
-            <option value="Critical">Critical</option>
-          </select>
-        </label>
-        <button type="submit">Add Bug</button>
-      </form>
-
-      <ul id="bug-list" class="bug-list">
-        <!-- Bugs will be rendered here -->
-      </ul>
-    </section>
-
-    <!-- Right: Bug details, timeline, story -->
-    <section class="panel panel-right">
-      <div id="bug-details" class="bug-details empty-state">
-        <p>Select a bug from the list to view its journey.</p>
-      </div>
-
-      <section class="bug-status-update">
-        <h3>Update Status</h3>
-        <form id="status-form">
-          <label>
-            New Status
-            <select id="new-status">
-              <option value="Open">Open</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Blocked">Blocked</option>
-              <option value="Resolved">Resolved</option>
-              <option value="Reopened">Reopened</option>
-            </select>
-          </label>
-          <label>
-            Comment
-            <textarea id="status-comment" rows="2"></textarea>
-          </label>
-          <label>
-            Author
-            <input type="text" id="status-author" placeholder="Your name" />
-          </label>
-          <button type="submit">Add Update</button>
-        </form>
-      </section>
-
-      <section class="bug-timeline-section">
-        <h3>Timeline</h3>
-        <div id="timeline" class="timeline">
-          <!-- Timeline events will be rendered here -->
-        </div>
-      </section>
-
-      <section class="bug-story-section">
-        <h3>Story Log</h3>
-        <div id="story-entries" class="story-log">
-          <!-- Story entries will be rendered here -->
-        </div>
-      </section>
-    </section>
-  </main>
-
-  <footer class="app-footer">
-    <small>Bug Quest Tracker — prototype</small>
-  </footer>
+    <div id="Buttons">
+      <button type="button" id="login">Login</button>
+      <button type="button" id="signup">Signup</button>
+    </div>
+  </form>
+  </div>
 
   <script src="app.js"></script>
 </body>
